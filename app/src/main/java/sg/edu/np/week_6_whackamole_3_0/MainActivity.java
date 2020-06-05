@@ -24,16 +24,21 @@ public class MainActivity extends AppCompatActivity {
     private static final String FILENAME = "MainActivity.java";
     private static final String TAG = "Whack-A-Mole3.0!";
 
-    private TextView newUser;
+    private EditText userLoginName, userPassword;
+    private TextView signupText;
     private Button loginButton;
 
-    MyDBHandler dbHandler = new MyDBHandler(this);
+    MyDBHandler dbHandler = new MyDBHandler(this, null, null, 1);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        userLoginName= findViewById(R.id.inputUsername);
+        userPassword = findViewById(R.id.inputPassword);
+        loginButton = findViewById(R.id.buttonLogin);
+        signupText = findViewById(R.id.signupText);
         /* Hint:
             This method creates the necessary login inputs and the new user creation ontouch.
             It also does the checks on button selected.
@@ -43,38 +48,33 @@ public class MainActivity extends AppCompatActivity {
             Log.v(TAG, FILENAME + ": Invalid user!");
         */
 
-        newUser = findViewById(R.id.newUser);
-        newUser.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Log.v(TAG, FILENAME + ": Create new user!");
-                Intent intent = new Intent(MainActivity.this, Main2Activity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
-                return false;
-            }
-        });
-
-        loginButton = findViewById(R.id.buttonLogin);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText etUsername = findViewById(R.id.inputUsername);
-                EditText etPassword = findViewById(R.id.inputPassword);
-                Log.v(TAG, FILENAME + ": Logging in with: " + etUsername.getText().toString() + ": " + etPassword.getText().toString());
+                Log.v(TAG, FILENAME + ": Logging in with: " + userLoginName.getText().toString() + ": " + userPassword.getText().toString());
 
-                if (isValidUser(etUsername.getText().toString(), etPassword.getText().toString()))
+                if (isValidUser(userLoginName.getText().toString(), userPassword.getText().toString()))
                 {
-                    Intent intent = new Intent(MainActivity.this, Main3Activity.class);
-                    intent.putExtra("Username", etUsername.toString());
-                    startActivity(intent);
-                    Toast.makeText(MainActivity.this, "Valid", Toast.LENGTH_SHORT).show();;
                     Log.v(TAG, FILENAME + "Valid User! Logging in");
+                    Intent intent = new Intent(MainActivity.this, Main3Activity.class);
+                    intent.putExtra("Username", userLoginName.toString());
+                    Toast.makeText(MainActivity.this, "Valid", Toast.LENGTH_SHORT).show();;
+                    startActivity(intent);
                 }
                 else{
                     Toast.makeText(MainActivity.this, "Invalid Username or Password", Toast.LENGTH_SHORT).show();
                     Log.v(TAG, FILENAME + "Invalid user!");
                 }
+            }
+        });
+
+        signupText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Intent intent = new Intent(MainActivity.this, Main2Activity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+                return false;
             }
         });
 
@@ -93,11 +93,15 @@ public class MainActivity extends AppCompatActivity {
             You may choose to use this or modify to suit your design.
          */
         UserData dbData = dbHandler.findUser(userName);
-
-        if (dbData.getMyUserName().equals(userName) && dbData.getMyPassword().equals(password))
+        if (dbData != null)
         {
-            return true;
+            if (dbData.getMyUserName().equals(userName) && dbData.getMyPassword().equals(password))
+            {
+                dbHandler.close();
+                return true;
+            }
         }
+        dbHandler.close();
         return false;
     }
 }

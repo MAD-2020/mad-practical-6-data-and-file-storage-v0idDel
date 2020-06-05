@@ -20,55 +20,45 @@ public class CustomScoreAdaptor extends RecyclerView.Adapter<CustomScoreViewHold
     private static final String FILENAME = "CustomScoreAdaptor.java";
     private static final String TAG = "Whack-A-Mole3.0!";
 
-    private OnItemClickListener mListener;
-    private UserData user;
     private Context con;
-    ArrayList<Integer> levelList = new ArrayList<>();
-    ArrayList<Integer> scoreList = new ArrayList<>();
+    private Integer level, score;
 
 
-    public interface OnItemClickListener{
-        void onItemClick(int position);
+    private UserData data = new UserData();
+
+    public UserData getData() {
+        return data;
     }
 
-    public void setOnItemClickListener(OnItemClickListener listener){
-        mListener = listener;
-    }
-
-
-    public CustomScoreAdaptor(UserData userdata, Context context){
-        this.user = userdata;
-        this.levelList = userdata.getLevels();
-        this.scoreList = userdata.getScores();
-        this.con = context;
-        /* Hint:
-        This method takes in the data and readies it for processing.
-         */
+    public CustomScoreAdaptor(UserData userdata){
+        data = userdata;
     }
 
     public CustomScoreViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.level_select, parent, false);
-        CustomScoreViewHolder csvh = new CustomScoreViewHolder(v, mListener);
-        return csvh;
-        /* Hint:
-        This method dictates how the viewholder layuout is to be once the viewholder is created.
-         */
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.level_select, parent, false);
+        CustomScoreViewHolder holder = new CustomScoreViewHolder(view);
+        return holder;
     }
 
     public void onBindViewHolder(CustomScoreViewHolder holder, final int position){
 
-        holder.level.setText(levelList.get(position).toString());
-        holder.score.setText(scoreList.get(position).toString());
+        level = data.getLevels().get(position);
+        score = data.getScores().get(position);
+        holder.levelText.setText("Level: " + level);
+        holder.scoreText.setText("Highest Score: " + score);
 
-        Log.v(TAG, FILENAME + " Showing level " + levelList.get(position) + " with highest score: " + scoreList.get(position));
-        Log.v(TAG, FILENAME+ ": Load level " + position +" for: " + user.getMyUserName());
-        /* Hint:
-        This method passes the data to the viewholder upon bounded to the viewholder.
-        It may also be used to do an onclick listener here to activate upon user level selections.
+        Log.v(TAG, FILENAME + " Showing level " + level + " with highest score: " + score);
 
-        Log.v(TAG, FILENAME + " Showing level " + level_list.get(position) + " with highest score: " + score_list.get(position));
-        Log.v(TAG, FILENAME+ ": Load level " + position +" for: " + list_members.getMyUserName());
-         */
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(con, Main4Activity.class);
+                intent.putExtra("Level", level);
+                intent.putExtra("Username", data.getMyUserName());
+                Log.v(TAG, FILENAME+ ": Load level " + position +" for: " + data.getMyUserName());
+                con.startActivity(intent);
+            }
+        });
     }
 
     public int getItemCount(){
@@ -76,7 +66,7 @@ public class CustomScoreAdaptor extends RecyclerView.Adapter<CustomScoreViewHold
         This method returns the the size of the overall data.
          */
 
-        return scoreList.size();
+        return data.getLevels().size();
 
     }
 }

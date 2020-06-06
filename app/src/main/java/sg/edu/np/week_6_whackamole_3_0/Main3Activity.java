@@ -5,8 +5,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,43 +27,45 @@ public class Main3Activity extends AppCompatActivity {
      */
     private static final String FILENAME = "Main3Activity.java";
     private static final String TAG = "Whack-A-Mole3.0!";
-    MyDBHandler dbHandler = new MyDBHandler(this, null, null, 1);
-    Button returnButton;
-
+    private Button returnButton;
+    MyDBHandler dbHandler = new MyDBHandler(this,null,null,1);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
+        /* Hint:
+        This method receives the username account data and looks up the database for find the
+        corresponding information to display in the recyclerView for the level selections page.
 
+        Log.v(TAG, FILENAME + ": Show level for User: "+ userName);
+         */
         returnButton = findViewById(R.id.returnButton);
-
-        Intent receivingEnd = getIntent();
-        String userName = receivingEnd.getStringExtra("Username");
-
-        UserData user = dbHandler.findUser(userName);
-        RecyclerView recyclerView = findViewById(R.id.levelRecyclerView);
-        CustomScoreAdaptor mAdaptor = new CustomScoreAdaptor(user);
-        LinearLayoutManager mlayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(mlayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(mAdaptor);
-        Log.v(TAG, FILENAME + ": Show level for user: " + userName);
-
         returnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Main3Activity.this, MainActivity.class);
-                Log.v(TAG, FILENAME + ": Returning to Login...");
                 startActivity(intent);
-                finish();
             }
         });
+
+        Intent receivingEnd = getIntent();
+        String username = receivingEnd.getStringExtra("Username");
+        UserData userData = dbHandler.findUser(username);
+
+        RecyclerView recyclerView = findViewById(R.id.levelRecyclerView);
+        CustomScoreAdaptor mAdaptor = new CustomScoreAdaptor(userData);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(mAdaptor);
+        Log.v(TAG, FILENAME + ": Show level for User: "+ username);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         finish();
-    }}
+    }
+}
 

@@ -3,7 +3,6 @@ package sg.edu.np.week_6_whackamole_3_0;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,15 +13,14 @@ public class CustomScoreViewHolder extends RecyclerView.ViewHolder {
      */
     private static final String FILENAME = "CustomScoreViewHolder.java";
     private static final String TAG = "Whack-A-Mole3.0!";
-
-    TextView levelText, scoreText;
+    public TextView levelText, scoreText;
 
     public CustomScoreViewHolder(final View itemView){
         super(itemView);
+        levelText = itemView.findViewById(R.id.levelText);
+        scoreText = itemView.findViewById(R.id.scoreText);
         /* Hint:
         This method dictates the viewholder contents and links the widget to the objects for manipulation.
          */
-        levelText = itemView.findViewById(R.id.levelText);
-        scoreText = itemView.findViewById(R.id.scoreText);
     }
 }
